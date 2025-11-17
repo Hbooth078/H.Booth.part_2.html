@@ -1,51 +1,114 @@
-function createParticles(num) {
-  for (let i = 0; i < num; i++) {
-    let p = new Particle(
-      random(width), // x position
-      random(height), // y position
-      random(5, 15), // radius
-      color(random(255), random(255), random(255)), // random color
-      random(-2, 2), // dx
-      random(-2, 2)  // dy
-    );
-    particles.push(p);
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Particle Animation - Stage 2</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #111;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script>
+// --------------------
+// Canvas Setup
+// --------------------
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// --------------------
+// Particle Class
+// --------------------
+class Particle {
+    constructor(x, y, radius, color, dx, dy) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.color = color;
+        this.dx = dx;
+        this.dy = dy;
+    }
+
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+    }
+
+    update() {
+        // Bounce left or right
+        if (this.x + this.radius >= canvas.width || this.x - this.radius <= 0) {
+            this.dx = -this.dx;
+        }
+
+        // Bounce top or bottom
+        if (this.y + this.radius >= canvas.height || this.y - this.radius <= 0) {
+            this.dy = -this.dy;
+        }
+
+        this.x += this.dx;
+        this.y += this.dy;
+
+        this.draw();
+    }
 }
 
+// --------------------
+// Particle Array
+// --------------------
+let particles = [];
+
+// Random color function
+function randomColor() {
+    return `hsl(${Math.random() * 360}, 100%, 50%)`;
+}
+
+// Create Particles
+function createParticles(count) {
+    particles = [];
+
+    for (let i = 0; i < count; i++) {
+        let radius = Math.random() * 10 + 5; // 5–15 px
+        let x = Math.random() * (canvas.width - radius * 2) + radius;
+        let y = Math.random() * (canvas.height - radius * 2) + radius;
+        let dx = (Math.random() - 0.5) * 4; // -2 to 2
+        let dy = (Math.random() - 0.5) * 4; // -2 to 2
+        let color = randomColor();
+
+        particles.push(new Particle(x, y, radius, color, dx, dy));
+    }
+}
+
+// Create 100 particles for Stage 2
 createParticles(100);
 
-    function draw() {
-  background(0);
-  for (let p of particles) {
-    p.update();
-    p.checkEdges(); // from Stage 1
-    p.display();
-  }
+// --------------------
+// Animation Loop
+// --------------------
+function animate() {
+    requestAnimationFrame(animate);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p => p.update());
 }
 
-    class Particle {
-  constructor(x, y, r, c, dx, dy) {
-    this.x = x;
-    this.y = y;
-    this.r = r;
-    this.c = c;
-    this.dx = dx;
-    this.dy = dy;
-  }
+animate();
 
-  update() {
-    this.x += this.dx;
-    this.y += this.dy;
-  }
+</script>
 
-  checkEdges() {
-    if (this.x < 0 || this.x > width) this.dx *= -1;
-    if (this.y < 0 || this.y > height) this.dy *= -1;
-  }
-
-  display() {
-    fill(this.c);
-    noStroke();
-    ellipse(this.x, this.y, this.r * 2);
-  }
-}
+</body>
+</html>
