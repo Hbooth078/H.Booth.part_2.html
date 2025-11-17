@@ -1,1 +1,51 @@
+function createParticles(num) {
+  for (let i = 0; i < num; i++) {
+    let p = new Particle(
+      random(width), // x position
+      random(height), // y position
+      random(5, 15), // radius
+      color(random(255), random(255), random(255)), // random color
+      random(-2, 2), // dx
+      random(-2, 2)  // dy
+    );
+    particles.push(p);
+  }
+}
 
+createParticles(100);
+
+    function draw() {
+  background(0);
+  for (let p of particles) {
+    p.update();
+    p.checkEdges(); // from Stage 1
+    p.display();
+  }
+}
+
+    class Particle {
+  constructor(x, y, r, c, dx, dy) {
+    this.x = x;
+    this.y = y;
+    this.r = r;
+    this.c = c;
+    this.dx = dx;
+    this.dy = dy;
+  }
+
+  update() {
+    this.x += this.dx;
+    this.y += this.dy;
+  }
+
+  checkEdges() {
+    if (this.x < 0 || this.x > width) this.dx *= -1;
+    if (this.y < 0 || this.y > height) this.dy *= -1;
+  }
+
+  display() {
+    fill(this.c);
+    noStroke();
+    ellipse(this.x, this.y, this.r * 2);
+  }
+}
